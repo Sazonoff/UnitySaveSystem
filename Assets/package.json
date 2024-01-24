@@ -1,0 +1,19 @@
+{
+  "name": "com.sazonoff.unitysavesystem-base",
+  "version": "1.0.0",
+  "displayName": "Save System",
+  "description": "Implements simple json save system",
+  "unity": "2019.1",
+  "unityRelease": "0b5",
+  "documentationUrl": "https://github.com/Sazonoff/UnitySaveSystem",
+  "changelogUrl": "https://github.com/Sazonoff/UnitySaveSystem",
+  "licensesUrl": "https://github.com/Sazonoff/UnitySaveSystem",
+  "dependencies": {
+    "com.sazonoff.unity-class-generator": "1.0.0"
+  },
+  "author": {
+    "name": "Anatoly Sazonov",
+    "email": "a@sazonov.dev",
+    "url": "https://github.com/Sazonoff/"
+  }
+}

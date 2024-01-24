@@ -1,0 +1,21 @@
+{
+    "name": "sazonoff.editor.unitysavesystem",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a3b4aa1ee86e4d84bac44199f82251f5",
+        "GUID:e7aceec8e51a0654994942a120ca944c"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "!SAZONOFF_SAVESYSTEM_DISABLEEDITOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
