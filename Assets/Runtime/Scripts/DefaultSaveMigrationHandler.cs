@@ -62,6 +62,11 @@ namespace UnitySaveSystem.Saves
                 return;
             }
 
+            if (logger != null)
+            {
+                migrationRule.InjectLogger(logger);
+            }
+
             migrationRules.Add(migrationRule);
             migrationRules.Sort();
         }
