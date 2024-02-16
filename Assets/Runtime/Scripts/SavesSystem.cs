@@ -102,6 +102,11 @@ namespace UnitySaveSystem.Saves
                     saveProvider.GetSave<T>(id, typeof(T), savesTypesProvider.GetSaveData(typeof(T)));
                 if (loadedSave != null)
                 {
+                    if (loadedSave.IsDirty)
+                    {
+                        OnSaveChanged(loadedSave);
+                    }
+
                     loadedSave.SaveChanged += OnSaveChanged;
                     CacheSave(loadedSave);
                     return (T)loadedSave;
@@ -116,6 +121,11 @@ namespace UnitySaveSystem.Saves
                     saveProvider.GetSave<T>(id, typeof(T), savesTypesProvider.GetSaveData(typeof(T)));
                 if (loadedSave != null)
                 {
+                    if (loadedSave.IsDirty)
+                    {
+                        OnSaveChanged(loadedSave);
+                    }
+
                     loadedSave.SaveChanged += OnSaveChanged;
                     CacheSave(loadedSave);
                     return (T)loadedSave;
@@ -130,6 +140,11 @@ namespace UnitySaveSystem.Saves
         {
             foreach (var save in saveProvider.GetAllSaves<T>())
             {
+                if (save.IsDirty)
+                {
+                    OnSaveChanged(save);
+                }
+
                 save.SaveChanged += OnSaveChanged;
                 CacheSave(save);
             }
