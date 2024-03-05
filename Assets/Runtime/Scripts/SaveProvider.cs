@@ -72,5 +72,6 @@ namespace UnitySaveSystem.Saves
         }
 
         public abstract void Dispose();
+        public abstract bool AnySaveRequiresNotification { get; }
     }
 }

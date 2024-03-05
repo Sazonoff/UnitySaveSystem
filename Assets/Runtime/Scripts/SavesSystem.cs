@@ -195,11 +195,20 @@ namespace UnitySaveSystem.Saves
                 {
                     logger.Log("Writing thread waiting for signal", SaveSystemLogType.Verbose);
                     waitHandler.WaitOne();
-                    IsSaveInProgress = true;
+                    bool requiredNotification = saveProvider.AnySaveRequiresNotification;
+                    if (requiredNotification)
+                    {
+                        IsSaveInProgress = true;
+                    }
+
                     logger.Log("Writing thread starting to write", SaveSystemLogType.Verbose);
                     saveProvider.WriteSaves();
-                    ++saveCounter;
-                    IsSaveInProgress = false;
+                    if (requiredNotification)
+                    {
+                        ++saveCounter;
+                        IsSaveInProgress = false;
+                    }
+
                     logger.Log("Writing thread ending write", SaveSystemLogType.Verbose);
                 }
             }

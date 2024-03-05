@@ -8,6 +8,7 @@ namespace UnitySaveSystem.Saves
         public bool JustCreatedFlag { get; set; }
         public bool IsDirty { get; private set; }
         public int SavedMigrationId { get; set; } = -1;
+        public virtual bool NotifyUserAboutSaving { get; } = true;
 
         public event Action<SaveFile> SaveChanged = delegate { };
 

@@ -48,5 +48,7 @@ namespace UnitySaveSystem.Saves
         /// Use it for any unmanaged code - close connection to db/streams e.t.c.
         /// </summary>
         void Dispose();
+
+        bool AnySaveRequiresNotification { get; }
     }
 }
