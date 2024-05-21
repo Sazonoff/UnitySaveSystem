@@ -1,14 +1,14 @@
 # What is it?
 Easy-to-use package for Unity in-game saves with:  
-- Multiple saves of the same type
+- Multiple saves of the same class
 - Two built-in save options: Newtonsoft Json.Net / LiteDB
 - Separate thread for writing saves
 - Simple save migrations
 
 # How to install?
 
-## Installing base
-This is just the base code for the save system.  
+## Installing
+
 Check unity documentation on installing git packages: https://docs.unity3d.com/2019.3/Documentation/Manual/upm-git.html   
 
 ### Using package manager:
@@ -28,21 +28,20 @@ https://github.com/Sazonoff/UnitySaveSystem.git?path=Assets
 }
 ```
 
-### Installing SaveProvider
-Base requires the installation of the so-called SaveProvider, which encapsulates the logic of writing/reading saves.  
-Each save provider may contain their own additional installation instructions.  
+### Picking SaveProvider
+There are SaveProviders, which encapsulate the logic of writing/reading saves.   
 
 Right now, there are two options to choose from:  
-1. Newtonsoft JSON(JSON.NET) https://github.com/Sazonoff/UnitySaveSystemJsonProvider
-2. LiteDB - saving in local db https://github.com/Sazonoff/UnitySaveSystemLiteDBProvider
+1. Newtonsoft JSON(JSON.NET)
+2. LiteDB - saving in local db
 
 
 # How to use
 - Create a new instance of SaveSystem
 - SaveSystem.Initialize(...) it
 - Call SaveSystem.SaveDirtyFiles() as often as you want. I prefer to call it every LateUpdate() 
-- Use SaveSystem.GetSave(int id) to get the required save
-- After any change to save - call save.SetDirty()
+- Use SaveSystem.GetSave<T>(int id) to get the required save
+- After any change to save - call save.SetDirty() so inform next SaveSystem.SaveDirtyFiles() to collect it
 
 # How do I make my own save?
 - Create your save class.
@@ -75,7 +74,7 @@ public class ExampleSave : SaveFile
 Look into Samples for more examples.   
 
 > [!WARNING]
-> Class structure can differ based on the save provider you're using. For example, JSON may require public setters/[JsonProperty] attribute. DB may not support all .Net types.
+> Class structure can differ based on the save provider you're using. For example, JSON may require public setters/[JsonProperty] attribute. DB may not support all .NET types.
 
 # Save migrations
 Most of Save providers(and their formats) have their own migration differences.  
@@ -130,7 +129,7 @@ In that case, you can call ISavesSystem.GetLogger() to get ISaveSystemLogger and
 But ISaveSystemLogger will continue to Debug.Log logs. You can change it by calling ISaveSystemLogger.SetCallbackOnlyMode();   
 
 # Is it single thread?
-Nope. You should always change saves in unity main thread. But after that, the system will use another thread for writing them (to disk or DB)  
+Nope. You should always change saves in unity main thread. But after that, the system will use another thread for writing them. 
 
 # How can I preload all saves(and cache inside SaveSystem) on the start of the game?
 Call ISavesSystem.PreloadAllSavesOfType<T>() for every Save Type after ISavesSystem.Initialize(...)  
