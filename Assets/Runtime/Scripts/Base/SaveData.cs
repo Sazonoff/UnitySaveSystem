@@ -6,11 +6,13 @@ namespace UnitySaveSystem.Saves
     {
         public string SaveName { get; private set; }
         public Type SaveType { get; private set; }
+        public string SaveExtension { get; private set; }
 
-        public SaveData(string saveName, Type type)
+        public SaveData(string saveName, string saveExtension, Type type)
         {
             SaveName = saveName;
             SaveType = type;
+            SaveExtension = saveExtension;
         }
     }
 }

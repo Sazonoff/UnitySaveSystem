@@ -45,7 +45,7 @@ namespace UnitySaveSystem.Saves
             foreach (var saveType in saveTypes)
             {
                 var attribute = saveType.GetCustomAttribute<SaveAttribute>();
-                var saveData = new SaveData(attribute.SaveName, saveType);
+                var saveData = new SaveData(attribute.SaveName, attribute.SafeExtension, saveType);
                 saveDatas.Add(saveType, saveData);
             }
         }

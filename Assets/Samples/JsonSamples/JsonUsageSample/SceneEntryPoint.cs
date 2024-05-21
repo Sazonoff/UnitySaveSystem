@@ -9,6 +9,7 @@ namespace UnitySaveSystem.Saves.Samples.JsonMigrationSample.Usage
         private ISavesSystem savesSystem;
         private SampleSave sampleSave1;
         private SampleSave sampleSave2;
+        private SampleSave2 anotherSampleSave;
 
         private void Awake()
         {
@@ -28,6 +29,12 @@ namespace UnitySaveSystem.Saves.Samples.JsonMigrationSample.Usage
             sampleSave2.SomeNumber = Random.Range(0, 5000);
             sampleSave2.SetDirty();
             Debug.Log($"Sample save2 after change: {sampleSave2.SomeNumber}");
+
+            anotherSampleSave = savesSystem.GetSave<SampleSave2>();
+            Debug.Log($"Another Sample save after load: {anotherSampleSave.SomeNumber}");
+            anotherSampleSave.SomeNumber = Random.Range(0, 5000);
+            anotherSampleSave.SetDirty();
+            Debug.Log($"Another Sample save after change: {anotherSampleSave.SomeNumber}");
         }
 
         void Update()

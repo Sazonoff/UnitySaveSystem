@@ -9,7 +9,6 @@ namespace UnitySaveSystem.Saves.Json
 {
     public class JsonSaveProvider : SaveProvider
     {
-        private const string SaveFileExtension = ".save";
         private string pathToSaveFolder;
         private List<JsonSave> tempList = new();
         private List<JsonSave> jsonsToSave = new();
@@ -34,7 +33,9 @@ namespace UnitySaveSystem.Saves.Json
             {
                 var jsonString = JsonConvert.SerializeObject(save);
                 var saveName = SavesTypesProvider.GetSaveData(save.GetType()).SaveName;
-                var jsonSave = new JsonSave(save.GetType(), save.Id, jsonString, saveName, save.NotifyUserAboutSaving);
+                var saveExtension = SavesTypesProvider.GetSaveData(save.GetType()).SaveExtension;
+                var jsonSave = new JsonSave(save.GetType(), save.Id, jsonString, saveName, saveExtension,
+                    save.NotifyUserAboutSaving);
                 Logger.Log($"Save added for writing {jsonSave.SaveName} with ID:{jsonSave.Id}",
                     SaveSystemLogType.Verbose);
                 tempList.Add(jsonSave);
@@ -78,7 +79,7 @@ namespace UnitySaveSystem.Saves.Json
         {
             try
             {
-                var fileName = jsonSave.SaveName + jsonSave.Id + SaveFileExtension;
+                var fileName = jsonSave.SaveName + jsonSave.Id + jsonSave.SaveExtension;
                 var pathToFile = Path.Combine(pathToSaveFolder, fileName);
                 Logger.Log($"Writing {jsonSave.SaveName} with ID:{jsonSave.Id}", SaveSystemLogType.Verbose);
                 File.WriteAllText(pathToFile, jsonSave.Json);
@@ -91,7 +92,7 @@ namespace UnitySaveSystem.Saves.Json
 
         protected override SaveFile ReadSave<T>(int id, Type type, SaveData saveData)
         {
-            var fileName = saveData.SaveName + id + SaveFileExtension;
+            var fileName = saveData.SaveName + id + saveData.SaveExtension;
             var pathToFile = Path.Combine(pathToSaveFolder, fileName);
             if (File.Exists(pathToFile))
             {
