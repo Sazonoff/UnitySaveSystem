@@ -1,7 +1,7 @@
 ﻿using System;
 using LiteDB;
 
-namespace UnitySaveSystem.Saves
+namespace UnitySaveSystem.Saves.LiteDB
 {
     public struct BsonSave
     {

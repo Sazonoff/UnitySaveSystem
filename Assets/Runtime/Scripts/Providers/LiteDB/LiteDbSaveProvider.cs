@@ -5,7 +5,7 @@ using System.Linq;
 using LiteDB;
 using UnityEngine;
 
-namespace UnitySaveSystem.Saves
+namespace UnitySaveSystem.Saves.LiteDB
 {
     public class LiteDbSaveProvider : SaveProvider
     {
@@ -29,7 +29,7 @@ namespace UnitySaveSystem.Saves
 
             var pathToDb = Path.Combine(pathToSaveFolder, DatabaseName);
             Logger.Log($"Opening connection to db {pathToDb}", SaveSystemLogType.Verbose);
-            db = new LiteDatabase(pathToDb);
+            db = new LiteDatabase(pathToDb, new BsonMapper());
         }
 
         protected override void SerializeDirtySaves(IEnumerable<SaveFile> dirtySaves)

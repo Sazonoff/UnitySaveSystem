@@ -1,0 +1,18 @@
+{
+    "name": "SaveSystemSamples",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a3b4aa1ee86e4d84bac44199f82251f5",
+        "GUID:bf202e2d4aed7d54d85479fee7cccae4",
+        "GUID:b585d51428a356c43a34f7610c4d384f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

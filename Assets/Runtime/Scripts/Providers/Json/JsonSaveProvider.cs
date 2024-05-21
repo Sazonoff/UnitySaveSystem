@@ -5,7 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace UnitySaveSystem.Saves
+namespace UnitySaveSystem.Saves.Json
 {
     public class JsonSaveProvider : SaveProvider
     {
