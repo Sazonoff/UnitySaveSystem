@@ -106,6 +106,12 @@ namespace UnitySaveSystem.Saves
             return (T)newSave;
         }
 
+        public IEnumerable<T> GetSaves<T>() where T : Save
+        {
+            var container = LoadContainer<T>();
+            return (IEnumerable<T>)container.GetAllSaves();
+        }
+
         public void SaveDirtyFiles()
         {
             if (prevSaveInProgress != IsSaveInProgress)

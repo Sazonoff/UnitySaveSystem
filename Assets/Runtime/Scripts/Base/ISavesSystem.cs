@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace UnitySaveSystem.Saves
 {
@@ -35,6 +36,14 @@ namespace UnitySaveSystem.Saves
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         T GetSave<T>(int id = 0) where T : Save;
+
+        /// <summary>
+        /// Get All saves of type
+        /// Useful for Save 'Slots' or in any other cases when you need to display all of the saves of type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        IEnumerable<T> GetSaves<T>() where T : Save;
 
         /// <summary>
         /// Ask save system to get all dirty saves and push them to save provider for writing.
