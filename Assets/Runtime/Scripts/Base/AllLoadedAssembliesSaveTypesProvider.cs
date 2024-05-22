@@ -29,7 +29,7 @@ namespace UnitySaveSystem.Saves
             foreach (var assembly in allDomainAssemblies)
             {
                 var allSavesTypes = assembly.GetTypes()
-                    .Where(p => p.IsClass && !p.IsAbstract && p.IsSubclassOf(typeof(SaveFile)) &&
+                    .Where(p => p.IsClass && !p.IsAbstract && p.IsSubclassOf(typeof(Save)) &&
                                 p.GetCustomAttribute<SaveAttribute>() != null);
                 saveTypes.AddRange(allSavesTypes);
             }

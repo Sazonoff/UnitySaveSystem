@@ -2,7 +2,7 @@
 
 namespace UnitySaveSystem.Saves
 {
-    public interface ISaveMigrationRule<T>: IComparable<ISaveMigrationRule<T>> where T : SaveFile
+    public interface ISaveMigrationRule<T>: IComparable<ISaveMigrationRule<T>> where T : Save
     {
         int Id { get; }
         void InjectLogger(SaveSystemLogger logger);

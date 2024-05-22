@@ -27,16 +27,18 @@ namespace UnitySaveSystem.Saves.Json
             }
         }
 
-        protected override void SerializeDirtySaves(IEnumerable<SaveFile> dirtySaves)
+        protected override void SerializeDirtySaves(IEnumerable<SaveContainer> containers)
         {
-            foreach (var save in dirtySaves)
+            foreach (var container in containers)
             {
-                var jsonString = JsonConvert.SerializeObject(save);
-                var saveName = SavesTypesProvider.GetSaveData(save.GetType()).SaveName;
-                var saveExtension = SavesTypesProvider.GetSaveData(save.GetType()).SaveExtension;
-                var jsonSave = new JsonSave(save.GetType(), save.Id, jsonString, saveName, saveExtension,
-                    save.NotifyUserAboutSaving);
-                Logger.Log($"Save added for writing {jsonSave.SaveName} with ID:{jsonSave.Id}",
+                var type = container.MySaveType;
+                var saveData = SavesTypesProvider.GetSaveData(type);
+                var jsonString = JsonConvert.SerializeObject(container.GetAllSaves());
+                var saveName = saveData.SaveName;
+                var saveExtension = saveData.SaveExtension;
+
+                var jsonSave = new JsonSave(type, jsonString, saveName, saveExtension, false);
+                Logger.Log($"Saving container {jsonSave.SaveName} with type:{jsonSave.Type}",
                     SaveSystemLogType.Verbose);
                 tempList.Add(jsonSave);
             }
@@ -45,7 +47,7 @@ namespace UnitySaveSystem.Saves.Json
             {
                 foreach (var save in tempList)
                 {
-                    var index = jsonsToSave.FindIndex(s => s.Type == save.Type && s.Id == save.Id);
+                    var index = jsonsToSave.FindIndex(s => s.Type == save.Type);
                     if (index != -1)
                     {
                         jsonsToSave[index] = save;
@@ -79,9 +81,10 @@ namespace UnitySaveSystem.Saves.Json
         {
             try
             {
-                var fileName = jsonSave.SaveName + jsonSave.Id + jsonSave.SaveExtension;
+                var fileName = String.Concat(jsonSave.SaveName, jsonSave.SaveExtension);
                 var pathToFile = Path.Combine(pathToSaveFolder, fileName);
-                Logger.Log($"Writing {jsonSave.SaveName} with ID:{jsonSave.Id}", SaveSystemLogType.Verbose);
+                Logger.Log($"Writing container {jsonSave.SaveName} with Type:{jsonSave.Type}",
+                    SaveSystemLogType.Verbose);
                 File.WriteAllText(pathToFile, jsonSave.Json);
             }
             catch (Exception e)
@@ -90,16 +93,17 @@ namespace UnitySaveSystem.Saves.Json
             }
         }
 
-        protected override SaveFile ReadSave<T>(int id, Type type, SaveData saveData)
+        protected override IEnumerable<Save> ReadSaves<T>(Type type, SaveData saveData)
         {
-            var fileName = saveData.SaveName + id + saveData.SaveExtension;
+            var arrayType = type.MakeArrayType();
+            var fileName = String.Concat(saveData.SaveName, saveData.SaveExtension);
             var pathToFile = Path.Combine(pathToSaveFolder, fileName);
             if (File.Exists(pathToFile))
             {
-                Logger.Log($"Reading {fileName} as {type.FullName}", SaveSystemLogType.Verbose);
+                Logger.Log($"Reading {fileName} as container for {type.FullName}", SaveSystemLogType.Verbose);
                 var fileText = File.ReadAllText(pathToFile);
-                var save = JsonConvert.DeserializeObject(fileText, type);
-                return (T)save;
+                var save = JsonConvert.DeserializeObject(fileText, arrayType);
+                return (T[])save;
             }
 
             Logger.Log($"Reading cancelled {fileName} not exist", SaveSystemLogType.Verbose);
@@ -111,17 +115,5 @@ namespace UnitySaveSystem.Saves.Json
         }
 
         public override bool AnySaveRequiresNotification => jsonsToSave.Any(s => s.RequiresSaveNotificationToUser);
-
-        public override IEnumerable<SaveFile> GetAllSaves<T>()
-        {
-            List<SaveFile> loadedSafe = new List<SaveFile>();
-            var saveFile = GetSave<T>(0, typeof(T), SavesTypesProvider.GetSaveData(typeof(T)));
-            if (saveFile != null)
-            {
-                loadedSafe.Add(saveFile);
-            }
-
-            return loadedSafe;
-        }
     }
 }

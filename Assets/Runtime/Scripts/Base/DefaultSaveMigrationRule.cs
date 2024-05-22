@@ -1,6 +1,6 @@
 ﻿namespace UnitySaveSystem.Saves
 {
-    public abstract class DefaultSaveMigrationRule<T> : ISaveMigrationRule<T> where T : SaveFile
+    public abstract class DefaultSaveMigrationRule<T> : ISaveMigrationRule<T> where T : Save
     {
         protected SaveSystemLogger Logger;
         public abstract int Id { get; }

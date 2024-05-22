@@ -34,7 +34,7 @@ namespace UnitySaveSystem.Saves
             foreach (var assembly in assemblyToSearch)
             {
                 var foundedTypes = assembly.GetTypes()
-                    .Where(p => p.IsClass && !p.IsAbstract && p.IsSubclassOf(typeof(SaveFile)) &&
+                    .Where(p => p.IsClass && !p.IsAbstract && p.IsSubclassOf(typeof(Save)) &&
                                 p.GetCustomAttribute<SaveAttribute>() != null);
                 saveTypes.AddRange(foundedTypes);
             }

@@ -13,8 +13,8 @@ namespace UnitySaveSystem.Saves
         private readonly SaveSystemLogger logger;
         private bool isInitialized;
 
-        private Dictionary<Type, Dictionary<int, SaveFile>> cachedSaves = new();
-        private HashSet<SaveFile> dirtySaves = new();
+        private Dictionary<Type, SaveContainer> cachedSavesContainers = new();
+        private HashSet<SaveContainer> dirtySaves = new();
 
         private Thread writingThread;
         private readonly AutoResetEvent waitHandler = new(false);
@@ -23,6 +23,7 @@ namespace UnitySaveSystem.Saves
         private int prevSaveCounter;
         private int saveCounter;
         public bool IsSaveInProgress { get; private set; }
+
         public event Action<bool> SaveInProgressChanged = delegate { };
 
         public SavesSystem(ISavesTypesProvider savesTypesProvider, ISaveProvider saveProvider)
@@ -44,6 +45,11 @@ namespace UnitySaveSystem.Saves
             writingThread.Start();
         }
 
+        public void PreloadAllSavesOfType<T>() where T : Save
+        {
+            LoadContainer<T>();
+        }
+
         public ISaveSystemLogger GetLogger()
         {
             return logger;
@@ -58,96 +64,46 @@ namespace UnitySaveSystem.Saves
             writingThread.Join();
         }
 
-        private SaveFile CreateNewInstanceOfSave(int id, Type saveType)
+        private SaveContainer LoadContainer<T>() where T : Save
+        {
+            if (!cachedSavesContainers.ContainsKey(typeof(T)))
+            {
+                var saves = (IEnumerable<T>)saveProvider.GetAllSavesOfType<T>();
+                var container = new SaveContainer(typeof(T), saves);
+                container.SomeSaveChanged += OnSaveContainerChanged;
+                cachedSavesContainers.Add(typeof(T), container);
+                return container;
+            }
+
+            return cachedSavesContainers[typeof(T)];
+        }
+
+        private Save CreateNewInstanceOfSave(int id, Type saveType)
         {
             logger.Log($"New save was created {saveType.Name} with ID {id}", SaveSystemLogType.Debug);
-            var saveInstance = (SaveFile)Activator.CreateInstance(saveType);
+            var saveInstance = (Save)Activator.CreateInstance(saveType);
             saveInstance.Id = id;
             saveInstance.OnNewInstanceCreated();
-            saveInstance.SaveChanged += OnSaveChanged;
             saveInstance.SetDirty();
-            CacheSave(saveInstance);
             return saveInstance;
         }
 
-        private void CacheSave(SaveFile saveFile)
+        private void OnSaveContainerChanged(SaveContainer container)
         {
-            logger.Log($"Storing save {saveFile.GetType().FullName} with ID {saveFile.Id} to cache",
-                SaveSystemLogType.Debug);
-            var type = saveFile.GetType();
-            if (!cachedSaves.ContainsKey(type))
-            {
-                cachedSaves.Add(type, new Dictionary<int, SaveFile>());
-            }
-
-            cachedSaves[type].Add(saveFile.Id, saveFile);
+            dirtySaves.Add(container);
         }
 
-        private void OnSaveChanged(SaveFile saveFile)
+        public T GetSave<T>(int id = 0) where T : Save
         {
-            dirtySaves.Add(saveFile);
-        }
-
-        public T GetSave<T>(int id = 0) where T : SaveFile
-        {
-            if (cachedSaves.ContainsKey(typeof(T)))
+            var container = LoadContainer<T>();
+            if (container.HaveSaveWithId(id))
             {
-                if (cachedSaves[typeof(T)].TryGetValue(id, out var data))
-                {
-                    logger.Log($"Returning save from cache {typeof(T).Name} with ID {id}", SaveSystemLogType.Debug);
-                    return (T)data;
-                }
-
-                var loadedSave =
-                    saveProvider.GetSave<T>(id, typeof(T), savesTypesProvider.GetSaveData(typeof(T)));
-                if (loadedSave != null)
-                {
-                    if (loadedSave.IsDirty)
-                    {
-                        OnSaveChanged(loadedSave);
-                    }
-
-                    loadedSave.SaveChanged += OnSaveChanged;
-                    CacheSave(loadedSave);
-                    return (T)loadedSave;
-                }
-
-                var newSave = (T)CreateNewInstanceOfSave(id, typeof(T));
-                return newSave;
+                return (T)container.GetSaveById(id);
             }
-            else
-            {
-                var loadedSave =
-                    saveProvider.GetSave<T>(id, typeof(T), savesTypesProvider.GetSaveData(typeof(T)));
-                if (loadedSave != null)
-                {
-                    if (loadedSave.IsDirty)
-                    {
-                        OnSaveChanged(loadedSave);
-                    }
 
-                    loadedSave.SaveChanged += OnSaveChanged;
-                    CacheSave(loadedSave);
-                    return (T)loadedSave;
-                }
-
-                var newSave = (T)CreateNewInstanceOfSave(id, typeof(T));
-                return newSave;
-            }
-        }
-
-        public void PreloadAllSavesOfType<T>() where T : SaveFile
-        {
-            foreach (var save in saveProvider.GetAllSaves<T>())
-            {
-                if (save.IsDirty)
-                {
-                    OnSaveChanged(save);
-                }
-
-                save.SaveChanged += OnSaveChanged;
-                CacheSave(save);
-            }
+            var newSave = CreateNewInstanceOfSave(id, typeof(T));
+            container.AddNewSave(newSave);
+            return (T)newSave;
         }
 
         public void SaveDirtyFiles()
@@ -162,10 +118,11 @@ namespace UnitySaveSystem.Saves
             {
                 if (prevSaveCounter != saveCounter)
                 {
-                    //Sometimes save is so fast that you don't even notice(in main thread) IsSaveInProgress boolean was changed between frames
+                    //Sometimes save is so fast that it starts and ends inside one main thread frame
                     //But I'm still wanna show notification to user so he can be sure that his progress was saved
-                    //I think using lock or any thread sync methods for that case would be completely overhead
-                    //So i'm using that little trick with counter comparison
+                    //I think using lock or any thread sync methods for that case would be unnecessary overhead
+                    //So I'm using that little trick with counter comparison
+                    //Is is possible to have race condition here but it's just delaying notification to the next save cycle
                     SaveInProgressChanged.Invoke(true);
                     SaveInProgressChanged.Invoke(false);
                     prevSaveCounter = saveCounter;

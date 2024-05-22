@@ -24,49 +24,55 @@ namespace UnitySaveSystem.Saves
         /// </summary>
         public abstract void Initialize();
 
-        public void AddSavesToWrite(IEnumerable<SaveFile> dirtySaves)
+        public void AddSavesToWrite(IEnumerable<SaveContainer> containers)
         {
-            foreach (var dirtySave in dirtySaves)
+            foreach (var container in containers)
             {
-                if (MigrationHandlers.TryGetValue(dirtySave.GetType(), out var handler))
+                foreach (var save in container.GetAllSaves())
                 {
-                    dirtySave.SavedMigrationId = handler.GetCurrentMigrationId();
+                    if (MigrationHandlers.TryGetValue(save.GetType(), out var handler))
+                    {
+                        save.SavedMigrationId = handler.GetCurrentMigrationId();
+                    }
                 }
             }
 
-            SerializeDirtySaves(dirtySaves);
+            SerializeDirtySaves(containers);
         }
 
-        protected abstract void SerializeDirtySaves(IEnumerable<SaveFile> dirtySaves);
+        protected abstract void SerializeDirtySaves(IEnumerable<SaveContainer> dirtySaves);
 
         public abstract void WriteSaves();
 
-        public SaveFile GetSave<T>(int id, Type type, SaveData saveData) where T : SaveFile
+        public IEnumerable<Save> GetAllSavesOfType<T>() where T : Save
         {
-            var saveFile = ReadSave<T>(id, type, saveData);
-            if (saveFile != null)
+            var saves = ReadSaves<T>(typeof(T), SavesTypesProvider.GetSaveData(typeof(T)));
+
+            if (saves != null)
             {
-                TryMigrate<T>(saveFile);
+                foreach (var save in saves)
+                {
+                    TryMigrate<T>(save);
+                }
             }
 
-            return saveFile;
+
+            return saves;
         }
 
-        public abstract IEnumerable<SaveFile> GetAllSaves<T>() where T : SaveFile;
+        protected abstract IEnumerable<Save> ReadSaves<T>(Type type, SaveData saveData) where T : Save;
 
-        private void TryMigrate<T>(SaveFile saveFile) where T : SaveFile
+        private void TryMigrate<T>(Save save) where T : Save
         {
-            if (saveFile == null) return;
-            if (MigrationHandlers.TryGetValue(saveFile.GetType(), out var handler))
+            if (save == null) return;
+            if (MigrationHandlers.TryGetValue(save.GetType(), out var handler))
             {
                 var typedHandler = (ISaveMigrationHandler<T>)handler;
-                typedHandler.TryMigrate((T)saveFile);
+                typedHandler.TryMigrate((T)save);
             }
         }
 
-        protected abstract SaveFile ReadSave<T>(int id, Type type, SaveData saveData) where T : SaveFile;
-
-        public void RegisterSaveTypeMigrationHandler<T>(ISaveMigrationHandler<T> migrationHandler) where T : SaveFile
+        public void RegisterSaveTypeMigrationHandler<T>(ISaveMigrationHandler<T> migrationHandler) where T : Save
         {
             MigrationHandlers.Add(typeof(T), migrationHandler);
         }

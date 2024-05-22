@@ -2,7 +2,7 @@
 
 namespace UnitySaveSystem.Saves
 {
-    public abstract class SaveFile
+    public abstract class Save
     {
         public int Id { get; set; }
         public bool JustCreatedFlag { get; set; }
@@ -10,7 +10,7 @@ namespace UnitySaveSystem.Saves
         public int SavedMigrationId { get; set; } = -1;
         public virtual bool NotifyUserAboutSaving { get; } = true;
 
-        public event Action<SaveFile> SaveChanged = delegate { };
+        public event Action<Save> SaveChanged = delegate { };
 
         public void SetDirty()
         {

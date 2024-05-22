@@ -37,23 +37,24 @@ Right now, there are two options to choose from:
 
 
 # How to use
-- Create a new instance of SaveSystem
+- Create a new instance of SaveSystem with desired SaveProvider
 - SaveSystem.Initialize(...) it
-- Call SaveSystem.SaveDirtyFiles() as often as you want. I prefer to call it every LateUpdate() 
+- Call SaveSystem.SaveDirtyFiles() as often as you need. For example: call it once when a player pressed "Save Game" Button or call it every LateUpdate()
 - Use SaveSystem.GetSave<T>(int id) to get the required save
 - After any change to save - call save.SetDirty() so inform next SaveSystem.SaveDirtyFiles() to collect it
 
 # How do I make my own save?
 - Create your save class.
-- Inherit SaveFile.
+- Inherit from base 'Save' class.
 - Add SaveAttribute to the class definition.
 - Add default empty constructor.
-- If you change some data call SetDirty() That's pretty much it.
+- If you change some data call SetDirty()  
+- That's pretty much it.  
 Example:   
 
 ```
 [Save("ExampleSaveName")]
-public class ExampleSave : SaveFile
+public class ExampleSave : Save
 {
 
     public int SomeData { get; set; }
@@ -78,7 +79,7 @@ Look into Samples for more examples.
 
 # Save migrations
 Most of Save providers(and their formats) have their own migration differences.  
-For example: Just adding new field with default value to json don't need any complex migration logic.  
+For example: Just adding new field with default value to json doesn't need any complex migration logic.  
   
 But in some other cases you can register save migration handler.  
 ``` 
@@ -112,7 +113,7 @@ Example:
 Sure. You need to implement your own ISaveProvider(or SaveProvider which has some basic migration logic in it) and pass it to SavesSystem ctor.
 
 ## My own migration logic?
-In that case your save provider can't be inherited from SaveProvider. You should use ISaveProvider and 
+In that case your save provider can't be inherited from SaveProvider. You should use ISaveProvider and make sure your provider uses your migrations every read
 
 # Logging
 First of all, you need to add a scripting define symbol: https://docs.unity3d.com/Manual/CustomScriptingSymbols.html  

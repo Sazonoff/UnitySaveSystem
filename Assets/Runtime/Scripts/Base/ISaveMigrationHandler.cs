@@ -1,6 +1,6 @@
 ﻿namespace UnitySaveSystem.Saves
 {
-    public interface ISaveMigrationHandler<T> : ISaveMigrationWrapper where T : SaveFile
+    public interface ISaveMigrationHandler<T> : ISaveMigrationWrapper where T : Save
     {
         /// <summary>
         /// Checks if recently loaded save requires a migration and do it

@@ -32,15 +32,19 @@ namespace UnitySaveSystem.Saves.LiteDB
             db = new LiteDatabase(pathToDb, new BsonMapper());
         }
 
-        protected override void SerializeDirtySaves(IEnumerable<SaveFile> dirtySaves)
+        protected override void SerializeDirtySaves(IEnumerable<SaveContainer> containers)
         {
-            foreach (var save in dirtySaves)
+            foreach (var container in containers)
             {
-                var bson = BsonMapper.Global.ToDocument(save);
-                var saveName = SavesTypesProvider.GetSaveData(save.GetType()).SaveName;
-                var bsonSave = new BsonSave(save.GetType(), save.Id, bson, saveName, save.NotifyUserAboutSaving);
-                tempList.Add(bsonSave);
-                Logger.Log($"Serializing {saveName} with ID:{save.Id}", SaveSystemLogType.Verbose);
+                foreach (var save in container.GetAllSaves())
+                {
+                    var bson = BsonMapper.Global.ToDocument(save);
+                    var saveName = SavesTypesProvider.GetSaveData(container.MySaveType).SaveName;
+                    var bsonSave = new BsonSave(container.MySaveType, save.Id, bson, saveName, false);
+                    tempList.Add(bsonSave);
+                    Logger.Log($"Serializing save {saveName} with Type:{container.MySaveType}",
+                        SaveSystemLogType.Verbose);
+                }
             }
 
             lock (lockObject)
@@ -71,7 +75,7 @@ namespace UnitySaveSystem.Saves.LiteDB
 
             foreach (var bsonSave in bsonsToSaveTemp)
             {
-                Logger.Log($"Writing to db {bsonSave.SaveName} with ID:{bsonSave.Id}", SaveSystemLogType.Verbose);
+                Logger.Log($"Writing to db {bsonSave.SaveName} with Type:{bsonSave.Type}", SaveSystemLogType.Verbose);
                 WriteSave(bsonSave);
             }
 
@@ -92,25 +96,12 @@ namespace UnitySaveSystem.Saves.LiteDB
             }
         }
 
-        protected override SaveFile ReadSave<T>(int id, Type type, SaveData saveData)
+        protected override IEnumerable<Save> ReadSaves<T>(Type type, SaveData saveData)
         {
-            Logger.Log($"Reading from db type: {type.FullName} with ID:{id}", SaveSystemLogType.Verbose);
+            Logger.Log($"Reading from db type: {type.FullName}", SaveSystemLogType.Verbose);
             var collection = db.GetCollection<T>(saveData.SaveName);
-            var save = collection.FindById(id);
-            return save;
-        }
-
-        public override IEnumerable<SaveFile> GetAllSaves<T>()
-        {
-            List<SaveFile> loadedSafe = new List<SaveFile>();
-            foreach (var saveType in SavesTypesProvider.GetAllSaveTypes())
-            {
-                var collection = db.GetCollection<SaveFile>(SavesTypesProvider.GetSaveData(saveType).SaveName);
-                var allSavesOfType = collection.FindAll();
-                loadedSafe.AddRange(allSavesOfType);
-            }
-
-            return loadedSafe;
+            var saves = collection.FindAll();
+            return saves;
         }
 
         public override void Dispose()

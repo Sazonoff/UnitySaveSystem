@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace UnitySaveSystem.Saves
 {
@@ -20,8 +19,8 @@ namespace UnitySaveSystem.Saves
         /// The reason for it to be here is to avoid locking SaveFiles during work in the main thread / avoid serializing some part of the file while another part is being changed.
         /// We serialize saves here in the main thread and store them for another thread to write  
         /// </summary>
-        /// <param name="dirtySaves"></param>
-        void AddSavesToWrite(IEnumerable<SaveFile> dirtySaves);
+        /// <param name="dirtySaveContainers"></param>
+        void AddSavesToWrite(IEnumerable<SaveContainer> dirtySaveContainers);
 
         /// <summary>
         /// Here we write serialized data to disk/db/whatever. Called from writing thread.
@@ -31,16 +30,9 @@ namespace UnitySaveSystem.Saves
         /// <summary>
         /// Here we read save from disk/db/whatever  
         /// </summary>
-        /// <param name="id">Save id</param>
-        /// <param name="type">Type of save</param>
-        /// <param name="saveData">Meta data for save</param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        SaveFile GetSave<T>(int id, Type type, SaveData saveData) where T : SaveFile;
+        IEnumerable<Save> GetAllSavesOfType<T>() where T : Save;
 
-        IEnumerable<SaveFile> GetAllSaves<T>() where T : SaveFile;
-
-        void RegisterSaveTypeMigrationHandler<T>(ISaveMigrationHandler<T> migrationHandler) where T : SaveFile;
+        void RegisterSaveTypeMigrationHandler<T>(ISaveMigrationHandler<T> migrationHandler) where T : Save;
 
 
         /// <summary>

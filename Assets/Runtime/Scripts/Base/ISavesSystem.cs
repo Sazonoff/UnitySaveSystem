@@ -10,6 +10,8 @@ namespace UnitySaveSystem.Saves
         /// <param name="logType">what level of logs you want to see. NOTE: By default logs are completely stripped unless you define symbol: SAZONOFF_SAVESYSTEM_LOGSENABLED</param>
         void Initialize(SaveSystemLogType logType);
 
+        void PreloadAllSavesOfType<T>() where T : Save;
+
         /// <summary>
         /// Get Inner Logger for controlling log flow
         /// </summary>
@@ -32,9 +34,7 @@ namespace UnitySaveSystem.Saves
         /// <param name="id">save id. 0 by default</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        T GetSave<T>(int id = 0) where T : SaveFile;
-
-        void PreloadAllSavesOfType<T>() where T : SaveFile;
+        T GetSave<T>(int id = 0) where T : Save;
 
         /// <summary>
         /// Ask save system to get all dirty saves and push them to save provider for writing.

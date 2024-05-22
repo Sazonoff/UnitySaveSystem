@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace UnitySaveSystem.Saves
 {
-    public class DefaultSaveMigrationHandler<T> : ISaveMigrationHandler<T> where T : SaveFile
+    public class DefaultSaveMigrationHandler<T> : ISaveMigrationHandler<T> where T : Save
     {
         private readonly List<ISaveMigrationRule<T>> migrationRules = new();
         private SaveSystemLogger logger;

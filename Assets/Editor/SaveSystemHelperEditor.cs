@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Sazonoff.CodeGenerator;
@@ -46,26 +45,13 @@ namespace UnitySaveSystem.Saves
 
             var allSaveTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
-                .Where(type => type.IsSubclassOf(typeof(SaveFile)));
-            HashSet<string> saveNamespaces = new();
-            saveNamespaces.Add("UnitySaveSystem.Saves");
-            foreach (var saveType in allSaveTypes)
-            {
-                if (!string.IsNullOrEmpty(saveType.Namespace))
-                {
-                    saveNamespaces.Add(saveType.Namespace);
-                }
-            }
-
+                .Where(type => type.IsSubclassOf(typeof(Save)));
 
             GeneratedClass preloadClass = new GeneratedClass("PreloadSavesHelper", null);
             var saveSystemField = new GeneratedField("savesSystem", "ISavesSystem", GeneratedAccessType.@private,
                 isReadOnly: true);
             preloadClass.AddField(saveSystemField);
-            foreach (var saveNamespace in saveNamespaces)
-            {
-                preloadClass.AddUsing(saveNamespace);
-            }
+            preloadClass.AddUsing("UnitySaveSystem.Saves");
 
             var constructor = new GeneratedMethod(GeneratedAccessType.@public, "PreloadSavesHelper", String.Empty);
             constructor.AddParameter(new GeneratedMethodParameter("savesSystem", "ISavesSystem"));
@@ -75,7 +61,7 @@ namespace UnitySaveSystem.Saves
             var callMethod = new GeneratedMethod(GeneratedAccessType.@public, "PreloadSaves");
             foreach (var saveType in allSaveTypes)
             {
-                callMethod.AddBody($"savesSystem.PreloadAllSavesOfType<{saveType.Name}>();");
+                callMethod.AddBody($"savesSystem.PreloadAllSavesOfType<{saveType.FullName}>();");
             }
 
             preloadClass.AddMethod(callMethod);
