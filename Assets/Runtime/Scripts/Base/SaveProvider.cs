@@ -7,12 +7,15 @@ namespace UnitySaveSystem.Saves
     {
         protected ISavesTypesProvider SavesTypesProvider;
         protected SaveSystemLogger Logger;
+        protected ISaveToFileLogic SaveToFileLogic;
         protected readonly Dictionary<Type, ISaveMigrationWrapper> MigrationHandlers = new();
 
-        public void InjectDependencies(ISavesTypesProvider savesTypesProvider, SaveSystemLogger logger)
+        public void InjectDependencies(ISavesTypesProvider savesTypesProvider, SaveSystemLogger logger,
+            ISaveToFileLogic saveToFileLogic)
         {
             this.SavesTypesProvider = savesTypesProvider;
             this.Logger = logger;
+            this.SaveToFileLogic = saveToFileLogic;
             foreach (var migrationHandler in MigrationHandlers.Values)
             {
                 migrationHandler.InjectLogger(Logger);

@@ -7,7 +7,8 @@ namespace UnitySaveSystem.Saves
     /// </summary>
     public interface ISaveProvider
     {
-        void InjectDependencies(ISavesTypesProvider savesTypesProvider, SaveSystemLogger logger);
+        void InjectDependencies(ISavesTypesProvider savesTypesProvider, SaveSystemLogger logger,
+            ISaveToFileLogic saveToFileLogic);
 
         /// <summary>
         /// Method for initializing your SaveSystem. Here you should calculate the required paths / open connections to db e.t.c  

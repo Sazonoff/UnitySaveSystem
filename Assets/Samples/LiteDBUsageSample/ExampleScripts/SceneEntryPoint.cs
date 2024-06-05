@@ -14,8 +14,10 @@ namespace UnitySaveSystem.Saves.Samples.LiteDBMigrationSample
         private void Awake()
         {
             var assemblyWithSaves = typeof(SampleSave).Assembly;
-            savesSystem = new SavesSystem(new SpecificAssembliesSaveTypesProvider(new[] { assemblyWithSaves }),
-                new LiteDbSaveProvider());
+            savesSystem = new SavesSystem(
+                new SpecificAssembliesSaveTypesProvider(new[] { assemblyWithSaves }),
+                new LiteDbSaveProvider(),
+                new NetSaveToFileLogic());
             savesSystem.Initialize(SaveSystemLogType.Verbose);
             sampleSave1 = savesSystem.GetSave<SampleSave>();
             Debug.Log($"Sample save1 after load: {sampleSave1.SomeNumber}");

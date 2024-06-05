@@ -18,8 +18,10 @@ namespace UnitySaveSystem.Saves.Samples.JsonMigrationSample.Migration
             sampleSaveMigrationHandler.AddMigrationRule(new SampleSaveMigration2());
             //uncomment for test
             jsonSaveProvider.RegisterSaveTypeMigrationHandler<SampleSave>(sampleSaveMigrationHandler);
-            savesSystem = new SavesSystem(new SpecificAssembliesSaveTypesProvider(new[] { assemblyWithSaves }),
-                jsonSaveProvider);
+            savesSystem = new SavesSystem(
+                new SpecificAssembliesSaveTypesProvider(new[] { assemblyWithSaves }),
+                jsonSaveProvider,
+                new NetSaveToFileLogic());
             savesSystem.Initialize(SaveSystemLogType.Verbose);
             sampleSave1 = savesSystem.GetSave<SampleSave>();
             Debug.Log($"Sample save1 after load: {sampleSave1.SomeNumber}");

@@ -21,10 +21,10 @@ namespace UnitySaveSystem.Saves.LiteDB
         public override void Initialize()
         {
             pathToSaveFolder = Path.Combine(Application.persistentDataPath, SavesSystem.BaseSaveFolder);
-            if (!Directory.Exists(pathToSaveFolder))
+            if (!SaveToFileLogic.DirectoryExist(pathToSaveFolder))
             {
                 Logger.Log($"Creating directory for saves {pathToSaveFolder}", SaveSystemLogType.Debug);
-                Directory.CreateDirectory(pathToSaveFolder);
+                SaveToFileLogic.CreateDirectory(pathToSaveFolder);
             }
 
             var pathToDb = Path.Combine(pathToSaveFolder, DatabaseName);
@@ -39,10 +39,11 @@ namespace UnitySaveSystem.Saves.LiteDB
                 foreach (var save in container.GetAllSaves())
                 {
                     var bson = BsonMapper.Global.ToDocument(save);
-                    var saveName = SavesTypesProvider.GetSaveData(container.MySaveType).SaveName;
-                    var bsonSave = new BsonSave(container.MySaveType, save.Id, bson, saveName, false);
+                    var saveData = SavesTypesProvider.GetSaveData(container.MySaveType);
+                    var bsonSave = new BsonSave(container.MySaveType, save.Id, bson, saveData.SaveName,
+                        saveData.NotifyUserAboutSaves);
                     tempList.Add(bsonSave);
-                    Logger.Log($"Serializing save {saveName} with Type:{container.MySaveType}",
+                    Logger.Log($"Serializing save {saveData.SaveName} with Type:{container.MySaveType}",
                         SaveSystemLogType.Verbose);
                 }
             }

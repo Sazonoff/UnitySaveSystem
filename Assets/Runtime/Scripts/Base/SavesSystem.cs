@@ -10,6 +10,7 @@ namespace UnitySaveSystem.Saves
 
         private readonly ISavesTypesProvider savesTypesProvider;
         private readonly ISaveProvider saveProvider;
+        private readonly ISaveToFileLogic saveToFileLogic;
         private readonly SaveSystemLogger logger;
         private bool isInitialized;
 
@@ -26,18 +27,21 @@ namespace UnitySaveSystem.Saves
 
         public event Action<bool> SaveInProgressChanged = delegate { };
 
-        public SavesSystem(ISavesTypesProvider savesTypesProvider, ISaveProvider saveProvider)
+        public SavesSystem(ISavesTypesProvider savesTypesProvider, ISaveProvider saveProvider,
+            ISaveToFileLogic saveToFileLogic)
         {
             this.savesTypesProvider = savesTypesProvider;
             this.saveProvider = saveProvider;
+            this.saveToFileLogic = saveToFileLogic;
             this.logger = new SaveSystemLogger();
         }
 
         public void Initialize(SaveSystemLogType logType)
         {
             logger.Initialize(logType);
+            saveToFileLogic.SetLogger(logger);
             savesTypesProvider.Initialize();
-            saveProvider.InjectDependencies(savesTypesProvider, logger);
+            saveProvider.InjectDependencies(savesTypesProvider, logger, saveToFileLogic);
             saveProvider.Initialize();
 
             isInitialized = true;
@@ -128,7 +132,7 @@ namespace UnitySaveSystem.Saves
                     //But I'm still wanna show notification to user so he can be sure that his progress was saved
                     //I think using lock or any thread sync methods for that case would be unnecessary overhead
                     //So I'm using that little trick with counter comparison
-                    //Is is possible to have race condition here but it's just delaying notification to the next save cycle
+                    //Is is possible to have race condition here but it's just delaying notification to the next save cycle call
                     SaveInProgressChanged.Invoke(true);
                     SaveInProgressChanged.Invoke(false);
                     prevSaveCounter = saveCounter;

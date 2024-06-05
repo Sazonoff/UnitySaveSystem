@@ -45,7 +45,10 @@ namespace UnitySaveSystem.Saves
             foreach (var saveType in saveTypes)
             {
                 var attribute = saveType.GetCustomAttribute<SaveAttribute>();
-                var saveData = new SaveData(attribute.SaveName, attribute.SafeExtension, saveType);
+                var instanceForReflection = Activator.CreateInstance(saveType);
+                bool notifyProperty =
+                    (bool)saveType.GetProperty("NotifyUserAboutSaving", typeof(bool))!.GetValue(instanceForReflection);
+                var saveData = new SaveData(attribute.SaveName, attribute.SafeExtension, saveType, notifyProperty);
                 saveDatas.Add(saveType, saveData);
             }
         }

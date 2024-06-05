@@ -20,9 +20,9 @@ namespace UnitySaveSystem.Saves.Json
             pathToSaveFolder = Path.Combine(Application.persistentDataPath, SavesSystem.BaseSaveFolder);
             Logger.Log($"Directory for saves {pathToSaveFolder}", SaveSystemLogType.Verbose);
 
-            if (!Directory.Exists(pathToSaveFolder))
+            if (!SaveToFileLogic.DirectoryExist(pathToSaveFolder))
             {
-                Directory.CreateDirectory(pathToSaveFolder);
+                SaveToFileLogic.CreateDirectory(pathToSaveFolder);
                 Logger.Log($"Creating new directory for saves {pathToSaveFolder}", SaveSystemLogType.Verbose);
             }
         }
@@ -37,7 +37,7 @@ namespace UnitySaveSystem.Saves.Json
                 var saveName = saveData.SaveName;
                 var saveExtension = saveData.SaveExtension;
 
-                var jsonSave = new JsonSave(type, jsonString, saveName, saveExtension, false);
+                var jsonSave = new JsonSave(type, jsonString, saveName, saveExtension, saveData.NotifyUserAboutSaves);
                 Logger.Log($"Saving container {jsonSave.SaveName} with type:{jsonSave.Type}",
                     SaveSystemLogType.Verbose);
                 tempList.Add(jsonSave);
@@ -85,7 +85,7 @@ namespace UnitySaveSystem.Saves.Json
                 var pathToFile = Path.Combine(pathToSaveFolder, fileName);
                 Logger.Log($"Writing container {jsonSave.SaveName} with Type:{jsonSave.Type}",
                     SaveSystemLogType.Verbose);
-                File.WriteAllText(pathToFile, jsonSave.Json);
+                SaveToFileLogic.WriteContentToFile(pathToFile, jsonSave.Json);
             }
             catch (Exception e)
             {
@@ -98,10 +98,10 @@ namespace UnitySaveSystem.Saves.Json
             var arrayType = type.MakeArrayType();
             var fileName = String.Concat(saveData.SaveName, saveData.SaveExtension);
             var pathToFile = Path.Combine(pathToSaveFolder, fileName);
-            if (File.Exists(pathToFile))
+            if (SaveToFileLogic.IsFileExist(pathToFile))
             {
                 Logger.Log($"Reading {fileName} as container for {type.FullName}", SaveSystemLogType.Verbose);
-                var fileText = File.ReadAllText(pathToFile);
+                var fileText = SaveToFileLogic.ReadTextFromFile(pathToFile);
                 var save = JsonConvert.DeserializeObject(fileText, arrayType);
                 return (T[])save;
             }
