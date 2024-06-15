@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Editor/SaveSystemMenuEditor.uss?fileID=7433441132597879392&amp;guid=2fd9f562b1328ea42ba36ecb3fa2fee0&amp;type=3#SaveSystemMenuEditor" />
+    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.45); padding-top: 0; justify-content: flex-start; align-self: auto; left: auto; opacity: 1; flex-basis: auto; flex-direction: column; width: 100%; height: 100%; position: flex-start; visibility: visible; overflow: visible; top: auto; right: auto; bottom: auto; align-items: center; min-width: auto; min-height: auto;">
+        <ui:Label text="Save System" name="Tittle" class="window-tittle" style="padding-top: 8px; padding-bottom: 8px; width: 100%;" />
+        <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); justify-content: space-around;">
+            <ui:Button text="Open Github Page" display-tooltip-when-elided="true" name="OpenGitHubButton" />
+            <ui:Button text="Generate Preload Class" display-tooltip-when-elided="true" name="GeneratePreloadClassButton" />
+            <ui:Button text="Open Save Folder" display-tooltip-when-elided="true" name="OpenSaveFolderButton" />
+            <ui:Button text="Delete local saves" display-tooltip-when-elided="true" name="DeleteSavesButton" class="delete-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

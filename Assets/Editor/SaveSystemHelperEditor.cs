@@ -10,8 +10,8 @@ namespace UnitySaveSystem.Saves
     public class SaveSystemHelperEditor : MonoBehaviour
     {
         private const string PreviousPathForPreloadSave = "Sazonoff_PreviousPreloadClass";
+        private const string GitHubPage = "https://github.com/Sazonoff/UnitySaveSystem";
 
-        [MenuItem("Tools/SaveSystem/Open Persistent Data Folder")]
         public static void OpenSaveFolder()
         {
             var pathToSaveFolder =
@@ -19,7 +19,6 @@ namespace UnitySaveSystem.Saves
             EditorUtility.RevealInFinder(pathToSaveFolder);
         }
 
-        [MenuItem("Tools/SaveSystem/Delete Saves")]
         public static void DeleteSaves()
         {
             if (EditorUtility.DisplayDialog("Delete all user saves?", "Are you sure?", "Delete", "Cancel"))
@@ -30,7 +29,6 @@ namespace UnitySaveSystem.Saves
             }
         }
 
-        [MenuItem("Tools/SaveSystem/Generate Preload Save")]
         public static void GeneratePreloadSave()
         {
             var prevPath = PlayerPrefs.GetString(PreviousPathForPreloadSave, Application.dataPath);
@@ -68,6 +66,11 @@ namespace UnitySaveSystem.Saves
 
             File.WriteAllText(pathToScript, preloadClass.ToCode());
             AssetDatabase.Refresh();
+        }
+
+        public static void OpenGitHubPage()
+        {
+            Application.OpenURL(GitHubPage);
         }
     }
 }

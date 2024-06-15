@@ -1,0 +1,49 @@
+.window-tittle {
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    text-overflow: clip;
+    -unity-text-outline-width: 0;
+    font-size: 22px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
+}
+
+Button {
+    background-color: rgb(255, 255, 255);
+    -unity-text-outline-width: 0;
+    font-size: 18px;
+    margin-left: 24px;
+    margin-right: 24px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    color: rgb(0, 0, 0);
+    height: 48px;
+    transition-duration: 0.3s;
+}
+
+Button:hover {
+    background-color: rgb(185, 181, 181);
+    transition-duration: 0.3s;
+}
+
+.delete-button {
+    background-color: rgb(255, 37, 37);
+}
+
+.delete-button:hover {
+    background-color: rgb(147, 0, 0);
+}

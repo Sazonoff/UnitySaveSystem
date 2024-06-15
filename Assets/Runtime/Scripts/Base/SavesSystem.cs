@@ -47,6 +47,8 @@ namespace UnitySaveSystem.Saves
             isInitialized = true;
             writingThread = new Thread(WriteChangedSaves) { IsBackground = true };
             writingThread.Start();
+            logger.Log($"Save system initialization complete. Version:{SaveSystemInfo.VersionCode}",
+                SaveSystemLogType.Debug);
         }
 
         public void PreloadAllSavesOfType<T>() where T : Save
