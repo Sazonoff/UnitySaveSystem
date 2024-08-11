@@ -9,6 +9,7 @@
   "changelogUrl": "https://github.com/Sazonoff/UnitySaveSystem",
   "licensesUrl": "https://github.com/Sazonoff/UnitySaveSystem",
   "dependencies": {
+	"com.unity.nuget.newtonsoft-json": "2.0.2",
     "com.sazonoff.unity-class-generator": "1.0.0"
   },
   "author": {
